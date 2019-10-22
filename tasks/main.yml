@@ -1,0 +1,62 @@
+---
+# file: tasks/main.yml
+
+- name: Check OS version and family
+  fail:
+    msg: |
+      This role can only be run against Debian 9.x (stretch).
+      {{ ansible_distribution }} {{ ansible_distribution_major_version }} is not supported.
+  when:
+    - not ansible_distribution == "Debian"
+    - not ansible_distribution_release == "stretch"
+  tags:
+    - always
+
+- name: Check Ansible version
+  fail:
+    msg: 'Ansible version 2.3 or greater is required!'
+  when: not ansible_version.full is version_compare('2.3', '>=')
+  tags:
+    - always
+
+- include: pre.yml
+  become: yes
+  tags:
+    - preliminary_tasks
+    - always
+
+- include: section_1.yml
+  become: yes
+  when: debian9cis_section_1
+  tags: section1
+
+- include: section_2.yml
+  become: yes
+  when: debian9cis_section_2
+  tags: section2
+
+- include: section_3.yml
+  become: yes
+  when: debian9cis_section_3
+  tags: section3
+
+- include: section_4.yml
+  become: yes
+  when: debian9cis_section_4
+  tags: section4
+
+- include: section_5.yml
+  become: yes
+  when: debian9cis_section_5
+  tags: section5
+
+- include: section_6.yml
+  become: yes
+  when: debian9cis_section_6
+  tags: section6
+
+- include: post.yml
+  become: yes
+  tags:
+    - post_tasks
+    - always

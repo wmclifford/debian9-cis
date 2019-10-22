@@ -1,0 +1,489 @@
+---
+# file: defaults/main.yml
+# Defaults for Debian9-CIS
+
+debian9cis_skip_for_travis: no
+
+debian9cis_not_auto: no
+debian9cis_section_1: yes
+debian9cis_section_2: yes
+debian9cis_section_3: yes
+debian9cis_section_4: yes
+debian9cis_section_5: yes
+debian9cis_section_6: yes
+
+debian9cis_selinux_disable: no
+
+# Ignore remount errors if building an image or are going to reboot
+debian9cis_ignore_remount_errors: no
+
+# ================================================================================
+# These variables correspond with the CIS rule IDs or paragraph numbers
+# defined in the CIS benchmark documents.
+# Please note, these word in coordination with the section number group
+# variables and tags. You must enable an entire section in order for
+# the variables below to take effect.
+# ================================================================================
+# Rules for Section 1: Initial Setup
+# --------------------------------------------------------------------------------
+# 1.1 Filesystem Configuration
+debian9cis_rule_1_1_1_1: yes
+debian9cis_rule_1_1_1_2: yes
+debian9cis_rule_1_1_1_3: yes
+debian9cis_rule_1_1_1_4: yes
+debian9cis_rule_1_1_1_5: yes
+debian9cis_rule_1_1_2: yes
+debian9cis_rule_1_1_3: yes
+debian9cis_rule_1_1_4: yes
+debian9cis_rule_1_1_5: yes
+debian9cis_rule_1_1_6: yes
+debian9cis_rule_1_1_7: yes
+debian9cis_rule_1_1_8: yes
+debian9cis_rule_1_1_9: yes
+debian9cis_rule_1_1_10: yes
+debian9cis_rule_1_1_11: yes
+debian9cis_rule_1_1_12: yes
+debian9cis_rule_1_1_13: yes
+debian9cis_rule_1_1_14: yes
+debian9cis_rule_1_1_15: yes
+debian9cis_rule_1_1_16: yes
+debian9cis_rule_1_1_17: yes
+debian9cis_rule_1_1_18: yes
+debian9cis_rule_1_1_19: yes
+debian9cis_rule_1_1_20: yes
+debian9cis_rule_1_1_21: yes
+debian9cis_rule_1_1_22: yes
+# 1.2 Configure Software Updates
+debian9cis_rule_1_2_1: yes
+debian9cis_rule_1_2_2: yes
+# 1.3 Filesystem Integrity Checking
+debian9cis_rule_1_3_1: yes
+debian9cis_rule_1_3_2: yes
+# 1.4 Secure Boot Settings
+debian9cis_rule_1_4_1: yes
+debian9cis_rule_1_4_2: yes
+debian9cis_rule_1_4_3: yes
+# 1.5 Additional Process Hardening
+debian9cis_rule_1_5_1: yes
+debian9cis_rule_1_5_2: yes
+debian9cis_rule_1_5_3: yes
+debian9cis_rule_1_5_4: yes
+# 1.6 Mandatory Access Control
+debian9cis_rule_1_6_1_1: yes
+debian9cis_rule_1_6_1_2: yes
+debian9cis_rule_1_6_1_3: yes
+debian9cis_rule_1_6_1_4: yes
+debian9cis_rule_1_6_2_1: yes
+debian9cis_rule_1_6_2_2: yes
+debian9cis_rule_1_6_3: yes
+# 1.7 Warning Banners
+debian9cis_rule_1_7_1_1: yes
+debian9cis_rule_1_7_1_2: yes
+debian9cis_rule_1_7_1_3: yes
+debian9cis_rule_1_7_1_4: yes
+debian9cis_rule_1_7_1_5: yes
+debian9cis_rule_1_7_1_6: yes
+debian9cis_rule_1_7_2: yes
+# 1.8 Ensure updates, patches, and additional security software are installed
+debian9cis_rule_1_8: yes
+# --------------------------------------------------------------------------------
+# Rules for Section 2: Services
+# --------------------------------------------------------------------------------
+# 2.1 inetd Services
+debian9cis_rule_2_1_1: yes
+debian9cis_rule_2_1_2: yes
+# 2.2 Special Purpose Services
+debian9cis_rule_2_2_1_1: yes
+debian9cis_rule_2_2_1_2: yes
+debian9cis_rule_2_2_1_3: yes
+debian9cis_rule_2_2_2: yes
+debian9cis_rule_2_2_3: yes
+debian9cis_rule_2_2_4: yes
+debian9cis_rule_2_2_5: yes
+debian9cis_rule_2_2_6: yes
+debian9cis_rule_2_2_7: yes
+debian9cis_rule_2_2_8: yes
+debian9cis_rule_2_2_9: yes
+debian9cis_rule_2_2_10: yes
+debian9cis_rule_2_2_11: yes
+debian9cis_rule_2_2_12: yes
+debian9cis_rule_2_2_13: yes
+debian9cis_rule_2_2_14: yes
+debian9cis_rule_2_2_15: yes
+debian9cis_rule_2_2_16: yes
+debian9cis_rule_2_2_17: yes
+# 2.3 Service Clients
+debian9cis_rule_2_3_1: yes
+debian9cis_rule_2_3_2: yes
+debian9cis_rule_2_3_3: yes
+debian9cis_rule_2_3_4: yes
+debian9cis_rule_2_3_5: yes
+# --------------------------------------------------------------------------------
+# Rules for Section 3: Network Configuration
+# --------------------------------------------------------------------------------
+# 3.1 Network Parameters (Host Only)
+debian9cis_rule_3_1_1: yes
+debian9cis_rule_3_1_2: yes
+# 3.2 Network Parameters (Host and Router)
+debian9cis_rule_3_2_1: yes
+debian9cis_rule_3_2_2: yes
+debian9cis_rule_3_2_3: yes
+debian9cis_rule_3_2_4: yes
+debian9cis_rule_3_2_5: yes
+debian9cis_rule_3_2_6: yes
+debian9cis_rule_3_2_7: yes
+debian9cis_rule_3_2_8: yes
+debian9cis_rule_3_2_9: yes
+# 3.3 TCP Wrappers
+debian9cis_rule_3_3_1: yes
+debian9cis_rule_3_3_2: yes
+debian9cis_rule_3_3_3: yes
+debian9cis_rule_3_3_4: yes
+debian9cis_rule_3_3_5: yes
+# 3.4 Uncommon Network Protocols
+debian9cis_rule_3_4_1: yes
+debian9cis_rule_3_4_2: yes
+debian9cis_rule_3_4_3: yes
+debian9cis_rule_3_4_4: yes
+# 3.5 Firewall Configuration
+debian9cis_rule_3_5_1_1: yes
+debian9cis_rule_3_5_1_2: yes
+debian9cis_rule_3_5_1_3: yes
+debian9cis_rule_3_5_1_4: yes
+debian9cis_rule_3_5_2_1: yes
+debian9cis_rule_3_5_2_2: yes
+debian9cis_rule_3_5_2_3: yes
+debian9cis_rule_3_5_2_4: yes
+debian9cis_rule_3_5_3: yes
+# 3.6 Ensure wireless interfaces are disabled
+debian9cis_rule_3_6: yes
+# 3.7 Disable IPv6
+debian9cis_rule_3_7: yes
+# --------------------------------------------------------------------------------
+# Rules for Section 4: Logging and Auditing
+# --------------------------------------------------------------------------------
+# 4.1 Configure System Accounting (auditd)
+debian9cis_rule_4_1_1_1: yes
+debian9cis_rule_4_1_1_2: yes
+debian9cis_rule_4_1_1_3: yes
+debian9cis_rule_4_1_2: yes
+debian9cis_rule_4_1_3: yes
+debian9cis_rule_4_1_4: yes
+debian9cis_rule_4_1_5: yes
+debian9cis_rule_4_1_6: yes
+debian9cis_rule_4_1_7: yes
+debian9cis_rule_4_1_8: yes
+debian9cis_rule_4_1_9: yes
+debian9cis_rule_4_1_10: yes
+debian9cis_rule_4_1_11: yes
+debian9cis_rule_4_1_12: yes
+debian9cis_rule_4_1_13: yes
+debian9cis_rule_4_1_14: yes
+debian9cis_rule_4_1_15: yes
+debian9cis_rule_4_1_16: yes
+debian9cis_rule_4_1_17: yes
+debian9cis_rule_4_1_18: yes
+# 4.2 Configure Logging
+debian9cis_rule_4_2_1_1: yes
+debian9cis_rule_4_2_1_2: yes
+debian9cis_rule_4_2_1_3: yes
+debian9cis_rule_4_2_1_4: yes
+debian9cis_rule_4_2_1_5: yes
+debian9cis_rule_4_2_2_1: yes
+debian9cis_rule_4_2_2_2: yes
+debian9cis_rule_4_2_2_3: yes
+debian9cis_rule_4_2_2_4: yes
+debian9cis_rule_4_2_2_5: yes
+debian9cis_rule_4_2_3: yes
+debian9cis_rule_4_2_4: yes
+# 4.3 Ensure logrotate is configured
+debian9cis_rule_4_3: yes
+# --------------------------------------------------------------------------------
+# Rules for Section 5: Access, Authentication, and Authorization
+# --------------------------------------------------------------------------------
+# 5.1 Configure cron
+debian9cis_rule_5_1_1: yes
+debian9cis_rule_5_1_2: yes
+debian9cis_rule_5_1_3: yes
+debian9cis_rule_5_1_4: yes
+debian9cis_rule_5_1_5: yes
+debian9cis_rule_5_1_6: yes
+debian9cis_rule_5_1_7: yes
+debian9cis_rule_5_1_8: yes
+# 5.2 SSH Server Configuration
+debian9cis_rule_5_2_1: yes
+debian9cis_rule_5_2_2: yes
+debian9cis_rule_5_2_3: yes
+debian9cis_rule_5_2_4: yes
+debian9cis_rule_5_2_5: yes
+debian9cis_rule_5_2_6: yes
+debian9cis_rule_5_2_7: yes
+debian9cis_rule_5_2_8: yes
+debian9cis_rule_5_2_9: yes
+debian9cis_rule_5_2_10: yes
+debian9cis_rule_5_2_11: yes
+debian9cis_rule_5_2_12: yes
+debian9cis_rule_5_2_13: yes
+debian9cis_rule_5_2_14: yes
+debian9cis_rule_5_2_15: yes
+debian9cis_rule_5_2_16: yes
+debian9cis_rule_5_2_17: yes
+debian9cis_rule_5_2_18: yes
+debian9cis_rule_5_2_19: yes
+# 5.3 Configure PAM
+debian9cis_rule_5_3_1: yes
+debian9cis_rule_5_3_2: yes
+debian9cis_rule_5_3_3: yes
+debian9cis_rule_5_3_4: yes
+# 5.4 User Accounts and Environment
+debian9cis_rule_5_4_1_1: yes
+debian9cis_rule_5_4_1_2: yes
+debian9cis_rule_5_4_1_3: yes
+debian9cis_rule_5_4_1_4: yes
+debian9cis_rule_5_4_1_5: yes
+debian9cis_rule_5_4_2: yes
+debian9cis_rule_5_4_3: yes
+debian9cis_rule_5_4_4: yes
+debian9cis_rule_5_4_5: yes
+# 5.5 Ensure root login is restricted to system console
+debian9cis_rule_5_5: yes
+# 5.6 Ensure access to the su command is restricted
+debian9cis_rule_5_6: yes
+# --------------------------------------------------------------------------------
+# Rules for Section 6: System Maintenance
+# --------------------------------------------------------------------------------
+# 6.1 System File Permissions
+debian9cis_rule_6_1_1: yes
+debian9cis_rule_6_1_2: yes
+debian9cis_rule_6_1_3: yes
+debian9cis_rule_6_1_4: yes
+debian9cis_rule_6_1_5: yes
+debian9cis_rule_6_1_6: yes
+debian9cis_rule_6_1_7: yes
+debian9cis_rule_6_1_8: yes
+debian9cis_rule_6_1_9: yes
+debian9cis_rule_6_1_10: yes
+debian9cis_rule_6_1_11: yes
+debian9cis_rule_6_1_12: yes
+debian9cis_rule_6_1_13: yes
+debian9cis_rule_6_1_14: yes
+# 6.2 User and Group Settings
+debian9cis_rule_6_2_1: yes
+debian9cis_rule_6_2_2: yes
+debian9cis_rule_6_2_3: yes
+debian9cis_rule_6_2_4: yes
+debian9cis_rule_6_2_5: yes
+debian9cis_rule_6_2_6: yes
+debian9cis_rule_6_2_7: yes
+debian9cis_rule_6_2_8: yes
+debian9cis_rule_6_2_9: yes
+debian9cis_rule_6_2_10: yes
+debian9cis_rule_6_2_11: yes
+debian9cis_rule_6_2_12: yes
+debian9cis_rule_6_2_13: yes
+debian9cis_rule_6_2_14: yes
+debian9cis_rule_6_2_15: yes
+debian9cis_rule_6_2_16: yes
+debian9cis_rule_6_2_17: yes
+debian9cis_rule_6_2_18: yes
+debian9cis_rule_6_2_19: yes
+debian9cis_rule_6_2_20: yes
+# ================================================================================
+# End of CIS rules
+# ================================================================================
+
+# Service configuration booleans
+# Set to "yes" or "true" to keep service.
+debian9cis_avahi_server: no
+debian9cis_cups_server: no
+debian9cis_dhcp_server: no
+debian9cis_ldap_server: no
+debian9cis_telnet_server: no
+debian9cis_nfs_server: no
+debian9cis_rpc_server: no
+debian9cis_ntalk_server: no
+debian9cis_rsyncd_server: no
+debian9cis_tftp_server: no
+debian9cis_rsh_server: no
+debian9cis_nis_server: no
+debian9cis_snmp_server: no
+debian9cis_squid_server: no
+debian9cis_smb_server: no
+debian9cis_dovecot_server: no
+debian9cis_httpd_server: no
+debian9cis_vsftpd_server: no
+debian9cis_named_server: no
+debian9cis_nfs_rpc_server: no
+debian9cis_is_mail_server: no
+debian9cis_bind: no
+debian9cis_vsftpd: no
+debian9cis_httpd: no
+debian9cis_dovecot: no
+debian9cis_samba: no
+debian9cis_squid: no
+debian9cis_net_snmp: no
+debian9cis_allow_autofs: no
+
+# xinetd
+debian9cis_xinetd_required: no
+
+# RedHat Satellite Subscription
+debian9cis_rhnsd_required: no
+
+# Bootloader password (1.4.2)
+debian9cis_bootloader_password: random
+debian9cis_set_boot_pass: no
+
+# System network parameters (host-only OR host and router)
+debian9cis_is_router: no
+
+# IPv6
+debian9cis_ipv6_required: yes
+
+# AIDE
+debian9cis_config_aide: yes
+# AIDE cron settings
+debian9cis_aide_cron:
+  cron_user: root
+  cron_file: /etc/crontab
+  aide_job: '/usr/bin/aide.wrapper --config /etc/aide/aide.conf --check'
+  aide_minute: 0
+  aide_hour: 5
+  aide_day: '*'
+  aide_month: '*'
+  aide_weekday: '*'
+
+# SELinux policy
+debian9cis_selinux_pol: targeted
+
+# Run tasks related to auditing/patching the desktop environment
+debian9cis_gui: no
+
+# Set to "yes" or "true" if X Windows is needed
+debian9cis_xwindows_required: no
+
+debian9cis_openldap_clients_required: no
+debian9cis_telnet_required: no
+debian9cis_talk_required: no
+debian9cis_rsh_required: no
+debian9cis_ypbind_required: no
+
+# Time Synchronization
+debian9cis_time_synchronization: ntp
+debian9cis_time_synchronization_servers:
+  - uri: "0.pool.ntp.org"
+    config: "minpoll 8"
+  - uri: "1.pool.ntp.org"
+    config: "minpoll 8"
+  - uri: "2.pool.ntp.org"
+    config: "minpoll 8"
+  - uri: "3.pool.ntp.org"
+    config: "minpoll 8"
+
+# 3.3.2 | PATCH | Ensure /etc/hosts.allow is configured
+debian9cis_host_allow:
+  - "10.0.0.0/255.0.0.0"
+  - "172.16.0.0/255.240.0.0"
+  - "192.168.0.0/255.255.0.0"
+  - "0.0.0.0/0.0.0.0"
+
+debian9cis_firewall: firewalld
+#debian9cis_firewall: iptables
+
+debian9cis_firewall_services:
+  - ssh
+  - dhcpv6-client
+
+# Warning Banner Content (issue, issue.net, motd)
+debian9cis_warning_banner: |
+  Authorized use only. All activity may be monitored and reported.
+# End banner
+
+## Section 4 vars
+debian9cis_auditd:
+  admin_space_left_action: halt
+  max_log_file_action: keep_logs
+debian9cis_logrotate: "daily"
+
+## Section 5 vars
+debian9cis_sshd:
+  client_alive_count_max: 3
+  client_alive_interval: 300
+  ciphers: "aes256-ctr,aes192-ctr,aes128-ctr"
+  macs: "hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com"
+  login_grace_time: 60
+  ### Make sure you understand the precedence when working with these values!!
+  # allow_users:
+  # allow_groups: systems dba
+  # deny_users:
+  # deny_groups:
+
+debian9cis_pwquality:
+  - key: 'minlen'
+    value: '14'
+  - key: 'dcredit'
+    value: '-1'
+  - key: 'ucredit'
+    value: '-1'
+  - key: 'ocredit'
+    value: '-1'
+  - key: 'lcredit'
+    value: '-1'
+
+debian9cis_pass:
+  max_days: 365
+  min_days: 7
+  warn_age: 7
+  inactive: 30
+
+debian9cis_shell_timeout: 900
+
+# Syslog system
+debian9cis_syslog: rsyslog
+#debian9cis_syslog: syslog-ng
+
+debian9cis_vartmp:
+  source: /tmp
+  fstype: false
+  opts: "defaults, nodev, nosuid, noexec, bind"
+  enabled: false
+
+# ================================================================================
+# Multi-OS variables
+# ================================================================================
+prelim_check_package_command:
+  RedHat: rpm -q
+  Debian: dpkg -V
+auditd_package:
+  RedHat: audit
+  Debian: auditd
+cron_package:
+  RedHat: cronie
+  Debian: cron
+cron_service:
+  RedHat: crond
+  Debian: cron
+ntp_service:
+  RedHat: ntpd
+  Debian: ntp
+chrony_service:
+  RedHat: chronyd
+  Debian: chrony
+tcp_wrapper_package:
+  RedHat: tcp_wrappers
+  Debian: tcpd
+bashrc_file:
+  RedHat: /etc/bashrc
+  Debian: /etc/bash.bashrc
+tmp_mount_file:
+  RedHat: /usr/lib/systemd/system/tmp.mount
+  Debian: /usr/share/systemd/tmp.mount
+tmp_mount_options:
+  RedHat: mode=1777,strictatime,noexec,nodev,nosuid
+  Debian: mode=1777,strictatime,nodev,nosuid
+chrony_config_file:
+  RedHat: /etc/chrony.conf
+  Debian: /etc/chrony/chrony.conf
+
+# Firewall
+debian9cis_setup_firewall: no

@@ -1,0 +1,449 @@
+---
+# file: tasks/section_6.yml
+# ======================================================================
+# Section 6
+# System Maintenance
+# ======================================================================
+
+# ----------------------------------------------------------------------
+# Section 6.1
+# System File Permissions
+# ----------------------------------------------------------------------
+
+- name: "NOTSCORED | 6.1.1 | PATCH | Audit system file permissions"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_1_1
+  tags:
+    - level2
+    - notscored
+    - patch
+    - rule_6.1.1
+    - notimplemented
+
+- name: "SCORED | 6.1.2 | PATCH | Ensure permissions on /etc/passwd are configured"
+  file:
+    dest: /etc/passwd
+    owner: root
+    group: root
+    mode: '0644'
+  when:
+    - debian9cis_rule_6_1_2
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.1.2
+
+- name: "SCORED | 6.1.3 | PATCH | Ensure permissions on /etc/shadow are configured"
+  file:
+    dest: /etc/shadow
+    owner: root
+    group: shadow
+    mode: '0640'
+  when:
+    - debian9cis_rule_6_1_3
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.1.3
+
+- name: "SCORED | 6.1.4 | PATCH | Ensure permissions on /etc/group are configured"
+  file:
+    dest: /etc/group
+    owner: root
+    group: root
+    mode: '0644'
+  when:
+    - debian9cis_rule_6_1_4
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.1.4
+
+- name: "SCORED | 6.1.5 | PATCH | Ensure permissions on /etc/gshadow are configured"
+  file:
+    dest: /etc/gshadow
+    owner: root
+    group: shadow
+    mode: '0640'
+  when:
+    - debian9cis_rule_6_1_5
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.1.5
+    
+- name: "SCORED | 6.1.6 | PATCH | Ensure permissions on /etc/passwd- are configured"
+  file:
+    dest: /etc/passwd-
+    owner: root
+    group: root
+    mode: '0644'
+  when:
+    - debian9cis_rule_6_1_6
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.1.6
+
+- name: "SCORED | 6.1.7 | PATCH | Ensure permissions on /etc/shadow- are configured"
+  file:
+    dest: /etc/shadow-
+    owner: root
+    group: shadow
+    mode: '0640'
+  when:
+    - debian9cis_rule_6_1_7
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.1.7
+
+- name: "SCORED | 6.1.8 | PATCH | Ensure permissions on /etc/group- are configured"
+  file:
+    dest: /etc/group-
+    owner: root
+    group: root
+    mode: '0644'
+  when:
+    - debian9cis_rule_6_1_8
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.1.8
+
+- name: "SCORED | 6.1.9 | PATCH | Ensure permissions on /etc/gshadow- are configured"
+  file:
+    dest: /etc/gshadow-
+    owner: root
+    group: shadow
+    mode: '0640'
+  when:
+    - debian9cis_rule_6_1_9
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.1.9
+
+- name: "SCORED | 6.1.10 | AUDIT | Ensure no world writable files exist"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_1_10
+  tags:
+    - level1
+    - scored
+    - audit
+    - rule_6.1.10
+    - notimplemented
+
+- name: "SCORED | 6.1.11 | AUDIT | Ensure no unowned files or directories exist"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_1_11
+  tags:
+    - level1
+    - scored
+    - audit
+    - rule_6.1.11
+    - notimplemented
+
+- name: "SCORED | 6.1.12 | AUDIT | Ensure no ungrouped files or directories exist"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_1_12
+  tags:
+    - level1
+    - scored
+    - audit
+    - rule_6.1.12
+    - notimplemented
+    
+- name: "NOTSCORED | 6.1.13 | AUDIT | Audit SUID executables"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_1_13
+  tags:
+    - level1
+    - notscored
+    - audit
+    - rule_6.1.13
+    - notimplemented
+    
+- name: "NOTSCORED | 6.1.14 | AUDIT | Audit SGID executables"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_1_14
+  tags:
+    - level1
+    - notscored
+    - audit
+    - rule_6.1.14
+    - notimplemented
+    
+# ----------------------------------------------------------------------
+# Section 6.2
+# User and Group Settings
+# ----------------------------------------------------------------------
+
+# ######################################################################
+# NOTE:
+#
+# Items 6.2.15 through 6.2.19 do not make use of the getent module by
+# design. If duplicate user or group names exist (which is what we are
+# checking for here), only one of the user/group entries will be made
+# available by the getent module. This is because the Ansible variable
+# is returned as a dictionary keyed on the user/group name. Because of
+# this, we cannot reliably determine the existence of duplicates using
+# the module. So, we drop back to using a few shell commands to scan
+# the /etc/group and /etc/passwd files for duplication issues.
+#
+# ######################################################################
+
+- name: "SCORED | 6.2.15 | PATCH | Ensure all groups in /etc/passwd exist in /etc/group"
+  block:
+    - name: "identify all groups referenced in /etc/passwd"
+      shell: >
+        getent passwd | awk -F: '{ print $4 }' | sort -nu
+      register: debian9cis_groups_in_passwd
+      changed_when: false
+    - name: "identify all group ids in /etc/group"
+      shell: >
+        getent group | awk -F: '{ print $3 }' | sort -nu
+      register: debian9cis_groups_in_group
+      changed_when: false
+    - name: "identify groups in passwd not in group"
+      assert:
+        quiet: yes
+        fail_msg: >-
+          Group id '{{ item }}' referenced in /etc/passwd not in /etc/group
+        success_msg: >-
+          Group id '{{ item }}' referenced in /etc/passwd found in /etc/group
+        that:
+          - item in debian9cis_groups_in_group.stdout_lines
+      with_items: "{{ debian9cis_groups_in_passwd.stdout_lines }}"
+      changed_when: false
+  when:
+    - debian9cis_rule_6_2_15
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.15
+
+- name: "SCORED | 6.2.16 | PATCH | Ensure no duplicate UIDs exist"
+  block:
+    - name: "check for duplicate user ids"
+      shell: >-
+        getent passwd |
+        awk -F: '{
+          if ($3 in a) {
+            a[$3][0]++ ; a[$3][1] = sprintf("%s,%s", a[$3][1], $1)
+          } else {
+            a[$3][0] = 1 ; a[$3][1] = $1
+          }
+        }
+        END {
+          for (y in a) {
+            if (a[y][0] > 1)
+              printf "%s:%s\n", y, a[y][1]
+          }
+        }'
+      register: debian9cis_dup_user_ids
+      changed_when: false
+    - name: "fail - located duplicated user ids"
+      fail:
+        msg: |
+          Error: the following user ids are duplicated
+          {{ debian9cis_dup_user_ids.stdout }}
+          Please review and correct manually.
+      when:
+        - debian9cis_dup_user_ids.stdout is defined
+        - debian9cis_dup_user_ids.stdout | length > 0
+  when:
+    - debian9cis_rule_6_2_16
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.16
+
+- name: "SCORED | 6.2.17 | PATCH | Ensure no duplicate GIDs exist"
+  block:
+    - name: "check for duplicate group ids"
+      shell: >-
+        getent group |
+        awk -F: '{
+          if ($3 in a) {
+            a[$3][0]++ ; a[$3][1] = sprintf("%s,%s", a[$3][1], $1)
+          } else {
+            a[$3][0] = 1 ; a[$3][1] = $1
+          }
+        }
+        END {
+          for (y in a) {
+            if (a[y][0] > 1)
+              printf "%s:%s\n", y, a[y][1]
+          }
+        }'
+      register: debian9cis_dup_group_ids
+      changed_when: false
+    - name: "fail - located duplicated group ids"
+      fail:
+        msg: |
+          Error: the following group ids are duplicated
+          {{ debian9cis_dup_group_ids.stdout }}
+          Please review and correct manually.
+      when:
+        - debian9cis_dup_group_ids.stdout is defined
+        - debian9cis_dup_group_ids.stdout | length > 0
+  when:
+    - debian9cis_rule_6_2_17
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.17
+
+- name: "SCORED | 6.2.18 | PATCH | Ensure no duplicate user names exist"
+  block:
+    - name: "check for duplicate user names"
+      shell: >-
+        getent passwd |
+        awk -F: '{
+          if ($1 in a) {
+            a[$1][0]++ ; a[$1][1] = sprintf("%s,%s", a[$1][1], $3)
+          } else {
+            a[$1][0] = 1 ; a[$1][1] = sprintf("%d", $3)
+          }
+        }
+        END {
+          for (y in a) {
+            if (a[y][0] > 1)
+              printf "%s:%s\n", y, a[y][1]
+          }
+        }'
+      register: debian9cis_dup_user_names
+      changed_when: false
+    - name: "fail - located duplicated user names"
+      fail:
+        msg: |
+          Error: the following users are duplicated
+          {{ debian9cis_dup_user_names.stdout }}
+          Please review and correct manually.
+      when:
+        - debian9cis_dup_user_names.stdout is defined
+        - debian9cis_dup_user_names.stdout | length > 0
+  when:
+    - debian9cis_rule_6_2_18
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.18
+
+- name: "SCORED | 6.2.19 | PATCH | Ensure no duplicate group names exist"
+  block:
+    - name: "check for duplicate group names"
+      shell: >-
+        getent group |
+        awk -F: '{
+          if ($1 in a) {
+            a[$1][0]++ ; a[$1][1] = sprintf("%s,%s", a[$1][1], $3)
+          } else {
+            a[$1][0] = 1 ; a[$1][1] = sprintf("%d", $3)
+          }
+        }
+        END {
+          for (y in a) {
+            if (a[y][0] > 1)
+              printf "%s:%s\n", y, a[y][1]
+          }
+        }'
+      register: debian9cis_dup_group_names
+      changed_when: false
+    - name: "fail - located duplicated group names"
+      fail:
+        msg: |
+          Error: the following groups are duplicated
+          {{ debian9cis_dup_group_names.stdout }}
+          Please review and correct manually.
+      when:
+        - debian9cis_dup_group_names.stdout is defined
+        - debian9cis_dup_group_names.stdout | length > 0
+  when:
+    - debian9cis_rule_6_2_19
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.19
+
+# ######################################################################
+# NOTE:
+#
+# If the previous group of checks passed, then we can be reasonably
+# assured that there are no duplicate names/ids in the system, and we
+# now make use of the getent module for the final task.
+#
+# ######################################################################
+
+- name: "SCORED | 6.2.20 | PATCH | Ensure shadow group is empty"
+  block:
+    - name: "read group info db"
+      getent: database=group split=":"
+      no_log: yes
+    - set_fact:
+        debian9cis_group_shadow_gid: "{{ getent_group['shadow'][1] }}"
+        debian9cis_group_shadow_users: []
+    - set_fact:
+        debian9cis_group_shadow_users: |
+          {{ getent_group['shadow'][2].split(',') | list | unique }}
+      when:
+        - getent_group['shadow'][2] | length > 0
+    - name: "remove users from 'shadow' group"
+      command: "gpasswd -d {{ item }} shadow"
+      with_items: "{{ debian9cis_group_shadow_users }}"
+      when:
+        - debian9cis_group_shadow_users | length > 0
+    - name: "read user info db"
+      getent: database=passwd split=":"
+      no_log: yes
+    - name: "identify users with primary group set to 'shadow'"
+      set_fact:
+        debian9cis_users_with_primary_group_shadow: |
+          {{ getent_passwd
+           | dict2items
+           | selectattr("value.2", "equalto", debian9cis_group_shadow_gid)
+           | map(attribute='key')
+           | list
+           | unique }}
+    - name: "move user primary group from 'shadow' to personal user group"
+      include: reset-user-primary-group.yml username={{ item }}
+      with_items: "{{ debian9cis_users_with_primary_group_shadow }}"
+      when:
+        - debian9cis_users_with_primary_group_shadow is defined
+        - debian9cis_users_with_primary_group_shadow | length > 0
+  when:
+    - debian9cis_rule_6_2_20
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.20
+
+# End -- Section 6
+# ======================================================================

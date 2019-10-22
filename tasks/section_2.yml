@@ -1,0 +1,461 @@
+---
+# file: tasks/section_2.yml
+
+# ----------------------------------------------------------------------
+# Section 2.1
+#
+
+- name: "SCORED | 2.1.1 | PATCH | Ensure xinetd is not installed (disable service)"
+  service:
+    name: xinetd
+    state: stopped
+    enabled: no
+  when:
+    - xinetd_service_status.stdout == "loaded"
+    - not debian9cis_xinetd_required
+    - debian9cis_rule_2_1_1
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_2.1.1
+
+- name: "SCORED | 2.1.1 | PATCH | Ensure xinetd is not installed (remove package)"
+  apt:
+    name: xinetd
+    state: absent
+    purge: yes
+  when:
+    - debian9cis_rule_2_1_1
+    - not debian9cis_xinetd_required
+  tags:
+    - level1
+    - scored
+    - patch
+    - xinetd
+    - rule_2.1.1
+
+- name: "SCORED | 2.1.2 | PATCH | Ensure openbsd-inetd is not installed"
+  apt:
+    name: openbsd-inetd
+    state: absent
+  when:
+    - openbsd_inetd_service_status.stdout == "ok installed"
+    - debian9cis_rule_2_1_2
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_2.1.2
+
+# ----------------------------------------------------------------------
+# Section 2.2
+#
+
+- name: "NOTSCORED | 2.2.1.1 | PATCH | Ensure time synchronization is in use"
+  block:
+    - name: "NOTSCORED | 2.2.1.1 | PATCH | Ensure time synchronization is in use (service install)"
+      apt:
+        name: "{{ debian9cis_time_synchronization }}"
+        state: present
+        install_recommends: no
+    - name: "NOTSCORED | 2.2.1.1 | PATCH | Ensure time synchronization is in use (service start)"
+      service:
+        name: "{{ debian9cis_time_synchronization }}"
+        state: started
+        enabled: yes
+    - name: "NOTSCORED | 2.2.1.1 | PATCH | Ensure time synchronization is in use (service stop: ntp)"
+      service:
+        name: "{{ ntp_service[ansible_os_family] }}"
+        state: stopped
+        enabled: no
+      when:
+        - debian9cis_time_synchronization == "chrony"
+        - ntpd_service_status.stdout == "loaded"
+    - name: "NOTSCORED | 2.2.1.1 | PATCH | Ensure time synchronization is in use (service stop: chrony)"
+      service:
+        name: "{{ chrony_service[ansible_os_family] }}"
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+      when:
+        - debian9cis_time_synchronization == "ntp"
+        - chronyd_service_status.stdout == "loaded"
+  when:
+    - debian9cis_rule_2_2_1_1
+  tags:
+    - level1
+    - notscored
+    - patch
+    - ntp
+    - rule_2.2.1.1
+
+- name: "SCORED | 2.2.1.2 | PATCH | Ensure ntp is configured"
+  block:
+    - name: "SCORED | 2.2.1.2 | PATCH | Ensure ntp is configured | modify /etc/ntp.conf"
+      template:
+        src: ntp.conf.j2
+        dest: /etc/ntp.conf
+        owner: root
+        group: root
+        mode: '0644'
+    - name: "SCORED | 2.2.1.2 | PATCH | Ensure ntp is configured | modify /etc/init.d/ntp"
+      lineinfile:
+        dest: /etc/init.d/ntp
+        regexp: "^RUNASUSER"
+        line: "RUNASUSER=ntp"
+  when:
+    - debian9cis_time_synchronization == "ntp"
+    - debian9cis_rule_2_2_1_2
+  tags:
+    - level1
+    - scored
+    - patch
+    - ntp
+    - rule_2.2.1.2
+
+- name: "SCORED | 2.2.1.3 | PATCH | Ensure chrony is configured"
+  block:
+    - name: "SCORED | 2.2.1.3 | PATCH | Ensure chrony is configured | modify /etc/chrony.conf"
+      template:
+        src: chrony.conf.j2
+        dest: "{{ chrony_config_file[ansible_os_family] }}"
+        owner: root
+        group: root
+        mode: '0644'
+    - name: "SCORED | 2.2.1.3 | PATCH | Ensure chrony is configured | modify /etc/sysconfig/chronyd"
+      lineinfile:
+        dest: /etc/sysconfig/chronyd
+        regexp: "^(#)?OPTIONS"
+        line: "OPTIONS=\"-u chrony\""
+        state: present
+        create: yes
+  when:
+    - debian9cis_time_synchronization == "chrony"
+    - debian9cis_rule_2_2_1_3
+  tags:
+    - level1
+    - scored
+    - patch
+    - ntp
+    - chrony
+    - rule_2.2.1.3
+
+- name: "SCORED | 2.2.2 | PATCH | Ensure X Window System is not installed"
+  apt:
+    name: "xserver-xorg*"
+    state: absent
+  when:
+    - not debian9cis_xwindows_required
+    - debian9cis_rule_2_2_2
+  tags:
+    - level1
+    - scored
+    - patch
+    - xwindows
+    - rule_2.2.2
+
+- name: "SCORED | 2.2.3 | PATCH | Ensure Avahi Server is not enabled"
+  service:
+    name: avahi-daemon
+    state: stopped
+    enabled: no
+  when:
+    - not debian9cis_avahi_server
+    - avahi_service_status.stdout == "loaded"
+    - debian9cis_rule_2_2_3
+  tags:
+    - level1
+    - scored
+    - patch
+    - services
+    - avahi
+    - rule_2.2.3
+
+- name: "SCORED | 2.2.4 | PATCH | Ensure CUPS is not enabled"
+  service:
+    name: cups
+    state: stopped
+    enabled: no
+  when:
+    - not debian9cis_cups_server
+    - cups_service_status.stdout == "loaded"
+    - debian9cis_rule_2_2_4
+  tags:
+    - level1
+    - scored
+    - patch
+    - services
+    - cups
+    - rule_2.2.4
+
+- name: "SCORED | 2.2.5 | PATCH | Ensure DHCP Server is not enabled"
+  service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: no
+  with_items:
+    - "isc-dhcp-server"
+    - "isc-dhcp-server6"
+  when:
+    - not debian9cis_dhcp_server
+    - dhcpd_service_status.stdout == "loaded"
+    - debian9cis_rule_2_2_5
+  tags:
+    - level1
+    - scored
+    - patch
+    - services
+    - dhcp
+    - rule_2.2.5
+
+- name: "SCORED | 2.2.6 | PATCH | Ensure LDAP server is not enabled"
+  service:
+    name: slapd
+    state: stopped
+    enabled: no
+  when:
+    - not debian9cis_ldap_server
+    - slapd_service_status.stdout == "loaded"
+    - debian9cis_rule_2_2_6
+  tags:
+    - level1
+    - scored
+    - patch
+    - services
+    - ldap
+    - rule_2.2.6
+
+- name: "SCORED | 2.2.7 | PATCH | Ensure NFS and RPC are not enabled"
+  block:
+    - name: "SCORED | 2.2.7 | PATCH | Ensure NFS and RPC are not enabled | disable nfs"
+      service:
+        name: nfs-server
+        state: stopped
+        enabled: no
+      when:
+        - nfs_service_status.stdout == "loaded"
+    - name: "SCORED | 2.2.7 | PATCH | Ensure NFS and RPC are not enabled | disable rpcbind"
+      service:
+        name: rpcbind
+        state: stopped
+        enabled: no
+      when:
+        - rpcbind_service_status.stdout == "loaded"
+  when:
+    - not debian9cis_nfs_rpc_server
+    - debian9cis_rule_2_2_7
+  tags:
+    - level1
+    - scored
+    - patch
+    - services
+    - nfs
+    - rpc
+    - rule_2.2.7
+
+- name: "SCORED | 2.2.8 | PATCH | Ensure DNS Server is not enabled"
+  service:
+    name: bind9
+    state: stopped
+    enabled: no
+  when:
+    - not debian9cis_named_server
+    - named_service_status.stdout == "loaded"
+    - debian9cis_rule_2_2_8
+  tags:
+    - level1
+    - scored
+    - patch
+    - services
+    - named
+    - rule_2.2.8
+
+- name: "SCORED | 2.2.9 | PATCH | Ensure FTP Server is not enabled"
+  service:
+    name: vsftpd
+    state: stopped
+    enabled: no
+  when:
+    - not debian9cis_vsftpd_server
+    - vsftpd_service_status.stdout == "loaded"
+    - debian9cis_rule_2_2_9
+  tags:
+    - level1
+    - scored
+    - patch
+    - services
+    - vsftpd
+    - rule_2.2.9
+
+- name: "SCORED | 2.2.10 | PATCH | Ensure HTTP server is not enabled"
+  service:
+    name: apache2
+    state: stopped
+    enabled: no
+  when:
+    - not debian9cis_httpd_server
+    - httpd_service_status.stdout == "loaded"
+    - debian9cis_rule_2_2_10
+  tags:
+    - level1
+    - scored
+    - patch
+    - services
+    - httpd
+    - rule_2.2.10
+
+- name: "SCORED | 2.2.11 | PATCH | Ensure IMAP and POP3 server is not enabled"
+  debug: msg=TODO
+  tags:
+    - level1
+    - scored
+    - patch
+    - services
+    - mta
+    - rule_2.2.11
+
+- name: "SCORED | 2.2.12 | PATCH | Ensure Samba is not enabled"
+  debug: msg=TODO
+  tags:
+    - level1
+    - scored
+    - patch
+    - services
+    - samba
+    - rule_2.2.12
+
+- name: "SCORED | 2.2.13 | PATCH | Ensure HTTP Proxy Server is not enabled"
+  debug: msg=TODO
+  tags:
+    - level1
+    - scored
+    - patch
+    - services
+    - squid
+    - rule_2.2.13
+
+- name: "SCORED | 2.2.14 | PATCH | Ensure SNMP Server is not enabled"
+  debug: msg=TODO
+  tags:
+    - level1
+    - scored
+    - patch
+    - services
+    - snmp
+    - rule_2.2.14
+
+- name: "SCORED | 2.2.15 | PATCH | Ensure mail transfer agent is configured for local-only mode"
+  debug: msg=TODO
+  tags:
+    - level1
+    - scored
+    - patch
+    - mta
+    - rule_2.2.15
+
+- name: "SCORED | 2.2.16 | PATCH | Ensure rsync service is not enabled"
+  debug: msg=TODO
+  tags:
+    - level1
+    - scored
+    - patch
+    - services
+    - rsync
+    - rule_2.2.16
+
+- name: "SCORED | 2.2.17 | PATCH | Ensure NIS Server is not enabled"
+  debug: msg=TODO
+  tags:
+    - level1
+    - scored
+    - patch
+    - services
+    - nis
+    - rule_2.2.17
+
+# ----------------------------------------------------------------------
+# Section 2.3
+# Service Clients
+#
+
+- name: "SCORED | 2.3.1 | PATCH | Ensure NIS Client is not installed"
+  apt:
+    name: nis
+    state: absent
+  when:
+    - not debian9cis_ypbind_required
+    - debian9cis_rule_2_3_1
+  tags:
+    - level1
+    - scored
+    - patch
+    - clients
+    - nis
+    - rule_2.3.1
+
+- name: "SCORED | 2.3.2 | PATCH | Ensure rsh client is not installed"
+  apt:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "rsh-client"
+    - "rsh-redone-client"
+  when:
+    - not debian9cis_rsh_required
+    - debian9cis_rule_2_3_2
+  tags:
+    - level1
+    - scored
+    - patch
+    - clients
+    - rsh
+    - rule_2.3.2
+
+- name: "SCORED | 2.3.3 | PATCH | Ensure talk client is not installed"
+  apt:
+    name: talk
+    state: absent
+  when:
+    - not debian9cis_talk_required
+    - debian9cis_rule_2_3_3
+  tags:
+    - level1
+    - scored
+    - patch
+    - clients
+    - talk
+    - rule_2.3.3
+
+- name: "SCORED | 2.3.4 | PATCH | Ensure telnet client is not installed"
+  apt:
+    name: telnet
+    state: absent
+  when:
+    - not debian9cis_telnet_required
+    - debian9cis_rule_2_3_4
+  tags:
+    - level1
+    - scored
+    - patch
+    - clients
+    - telnet
+    - rule_2.3.4
+
+- name: "SCORED | 2.3.5 | PATCH | Ensure LDAP client is not installed"
+  apt:
+    name: ldap-utils
+    state: absent
+  when:
+    - not debian9cis_openldap_clients_required
+    - debian9cis_rule_2_3_5
+  tags:
+    - level1
+    - scored
+    - patch
+    - clients
+    - ldap
+    - rule_2.3.5
+    
+# End -- Section 2
+# ----------------------------------------------------------------------

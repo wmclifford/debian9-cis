@@ -1,0 +1,25 @@
+---
+# file: tasks/reset-user-primary-group.yml
+#
+# Not to be used by itself. This is used as part of a with_items/include
+# loop in section 6.2.20 "Ensure shadow group is empty".
+#
+# Basic idea here is the primary group for the user in question was set
+# to the "shadow" group. This should not be. So here, we make sure that
+# there is a group with the same name as the user (basically a default
+# on Debian for normal users) and assign the user to that group.
+# On other systems, it may make more sense to simply assign the user to
+# the "users" group. Since that is not the standard for Debian, we chose
+# to go the route of using a group named according to the user.
+#
+
+- name: "ensure group for user '{{ username }}' exists"
+  group:
+    name: "{{ username }}"
+    state: present
+
+- name: "reset primary group of user '{{ username }}'"
+  user:
+    name: "{{ username }}"
+    group: "{{ username }}"
+    state: present
