@@ -308,6 +308,100 @@
 # ######################################################################
 # NOTE:
 #
+# Items 6.2.8 through 6.2.14 are more "audit" type items, and
+# modifications made would change permissions/files within the user
+# home directories, which we do not want to do. Instead, these items
+# should be audited using, for example, InSpec and addressed manually.
+#
+# ######################################################################
+
+- name: "SCORED | 6.2.8 | PATCH | Ensure user home directories permissions are 750 or more restrictive"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_2_8
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.8
+    - notimplemented
+
+- name: "SCORED | 6.2.9 | PATCH | Ensure users own their home directories"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_2_9
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.9
+    - notimplemented
+
+- name: "SCORED | 6.2.10 | PATCH | Ensure users dot files are not group or world writable"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_2_10
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.10
+    - notimplemented
+
+- name: "SCORED | 6.2.11 | PATCH | Ensure no users have .forward files"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_2_11
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.11
+    - notimplemented
+
+- name: "SCORED | 6.2.12 | PATCH | Ensure no users have .netrc files"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_2_12
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.12
+    - notimplemented
+
+- name: "SCORED | 6.2.13 | PATCH | Ensure user .netrc files are not group of world accessible"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_2_13
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.13
+    - notimplemented
+
+- name: "SCORED | 6.2.14 | PATCH | Ensure no users have .rhosts files"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_2_14
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.14
+    - notimplemented
+
+# ######################################################################
+# NOTE:
+#
 # Items 6.2.15 through 6.2.19 do not make use of the getent module by
 # design. If duplicate user or group names exist (which is what we are
 # checking for here), only one of the user/group entries will be made
