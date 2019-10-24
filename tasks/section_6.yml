@@ -199,6 +199,206 @@
 # User and Group Settings
 # ----------------------------------------------------------------------
 
+- name: "SCORED | 6.2.1 | PATCH | Ensure password fields are not empty"
+  command: "passwd -l {{ item }}"
+  changed_when: false
+  failed_when: false
+  with_items: "{{ empty_password_accounts.stdout_lines }}"
+  when:
+    - empty_password_accounts.rc
+    - debian9cis_rule_6_2_1
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.1
+
+- name: "SCORED | 6.2.2 | PATCH | Ensure no legacy '+' entries exist in /etc/passwd"
+  lineinfile:
+    path: /etc/passwd
+    regexp: '^\+'
+    state: absent
+  when:
+    - debian9cis_rule_6_2_2
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.2
+
+- name: "SCORED | 6.2.3 | PATCH | Ensure no legacy '+' entries exist in /etc/shadow"
+  lineinfile:
+    path: /etc/shadow
+    regexp: '^\+'
+    state: absent
+  when:
+    - debian9cis_rule_6_2_3
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.3
+
+- name: "SCORED | 6.2.4 | PATCH | Ensure no legacy '+' entries exist in /etc/group"
+  lineinfile:
+    path: /etc/group
+    regexp: '^\+'
+    state: absent
+  when:
+    - debian9cis_rule_6_2_4
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.4
+
+- name: "SCORED | 6.2.5 | PATCH | Ensure root is the only UID 0 account"
+  user:
+    name: "{{ item }}"
+    password_lock: yes
+  with_items: "{{ uid_zero_accounts_except_root.stdout_lines }}"
+  when:
+    - uid_zero_accounts_except_root.rc
+    - debian9cis_rule_6_2_5
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.5
+
+- name: "SCORED | 6.2.6 | AUDIT | Ensure root PATH integrity"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_2_6
+  tags:
+    - level1
+    - scored
+    - audit
+    - rule_6.2.6
+    - notimplemented
+
+- name: "SCORED | 6.2.7 | PATCH | Ensure all user home directories exist"
+  block:
+    - name: "identify users that can log in"
+      shell: >-
+        getent passwd |
+        awk -F: '($1 !~ "(root|halt|sync|shutdown)" &&
+                  $7 !~ ".*bin/nologin$" &&
+                  $7 != "/bin/false") { print $1 }' |
+        sort -u
+      register: regular_users
+      changed_when: false
+    - name: "make sure home folder exists"
+      user:
+        name: "{{ item }}"
+        create_home: yes
+      with_items: "{{ regular_users.stdout_lines }}"
+      when:
+        - regular_users.stdout_lines is defined
+        - regular_users.stdout_lines | length > 0
+  when:
+    - debian9cis_rule_6_2_7
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.7
+
+# ######################################################################
+# NOTE:
+#
+# Items 6.2.8 through 6.2.14 are more "audit" type items, and
+# modifications made would change permissions/files within the user
+# home directories, which we do not want to do. Instead, these items
+# should be audited using, for example, InSpec and addressed manually.
+#
+# ######################################################################
+
+- name: "SCORED | 6.2.8 | PATCH | Ensure user home directories permissions are 750 or more restrictive"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_2_8
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.8
+    - notimplemented
+
+- name: "SCORED | 6.2.9 | PATCH | Ensure users own their home directories"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_2_9
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.9
+    - notimplemented
+
+- name: "SCORED | 6.2.10 | PATCH | Ensure users dot files are not group or world writable"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_2_10
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.10
+    - notimplemented
+
+- name: "SCORED | 6.2.11 | PATCH | Ensure no users have .forward files"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_2_11
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.11
+    - notimplemented
+
+- name: "SCORED | 6.2.12 | PATCH | Ensure no users have .netrc files"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_2_12
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.12
+    - notimplemented
+
+- name: "SCORED | 6.2.13 | PATCH | Ensure user .netrc files are not group of world accessible"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_2_13
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.13
+    - notimplemented
+
+- name: "SCORED | 6.2.14 | PATCH | Ensure no users have .rhosts files"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_6_2_14
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_6.2.14
+    - notimplemented
+
 # ######################################################################
 # NOTE:
 #
