@@ -594,6 +594,7 @@
   #   state: present
   #   regexp: '^password\s+((\S+\s+)+)pam_unix\.so\s+(.*)(md5|sha512)(.*)$'
   #   line: 'password \1pam_unix.so \2sha512\4'
+  #   backrefs: yes
   #   #regexp: '^password\s+(\S+\s+)+pam_unix'
   #   #line: 'password [success=1 default=ignore] pam_unix.so obscure sha512'
   when:
@@ -791,10 +792,66 @@
 # root login
 # ----------------------------------------------------------------------
 
+# There are a _ton_ of entries in /etc/securetty, most of which will
+# probably not apply to your environment. Using a template file would
+# most likely be the best way to configure this. Here, we use the
+# lineinfile module to strip away entries which are known to be
+# unneeded.
+
+- name: "NOTSCORED | 5.5 | PATCH | Ensure root login is restricted to system console"
+  block:
+    # single-character
+    - lineinfile:
+        path: /etc/securetty
+        state: absent
+        regexp: '^tty[B-FHLMOPRT-Y][0-9]+'
+    # multi-character
+    - lineinfile:
+        path: /etc/securetty
+        state: absent
+        regexp: '^tty(SR|CH|MX|SI|USB|LU|SA|SC|AM|AMA|DB|SG|SMX|MM|CPM|VR|IOC|SIOC|PSC|AT|NX|UL|PZ|TX|MAX|EQ|mxc|sclp|SAC)[0-9]+'
+    # non "tty"
+    - lineinfile:
+        path: /etc/securetty
+        state: absent
+        regexp: '^duart[0-9]+'
+  when:
+    - debian9cis_rule_5_5
+  tags:
+    - level1
+    - notscored
+    - patch
+    - rule_5.5
+
 # ----------------------------------------------------------------------
 # Section 5.6
 # su access
 # ----------------------------------------------------------------------
+
+- name: "SCORED | 5.6 | PATCH | Ensure access to the su command is restricted"
+  block:
+    - lineinfile:
+        path: /etc/pam.d/su
+        state: present
+        regexp: '^(#)?auth.*pam_wheel'
+        line: 'auth required pam_wheel.so use_uid'
+    # Note: this is semi-dangerous -- stripping all users from the sudo group.
+    - lineinfile:
+        path: /etc/group
+        regexp: '^(sudo:x:\d+:).*$'
+        line: '\1'
+        backrefs: yes
+    - lineinfile:
+        path: /etc/gshadow
+        regexp: '^(sudo:\*::).*$'
+        line: 'sudo:*::'
+  when:
+    - debian9cis_rule_5_6
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.6
 
 # End -- Section 5
 # ======================================================================
