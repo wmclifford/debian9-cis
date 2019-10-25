@@ -516,6 +516,76 @@
 # Configure PAM
 # ----------------------------------------------------------------------
 
+- name: "SCORED | 5.3.1 | PATCH | Ensure password creation requirements are configured"
+  block:
+    - apt:
+        name: libpam-pwquality
+        state: present
+        install_recommends: no
+    - lineinfile:
+        state: present
+        path: /etc/security/pwquality.conf
+        regexp: '^{{ item.key }} = '
+        line: '{{ item.key }} = {{ item.value }}'
+      with_items:
+        - "{{ debian9cis_pwquality }}"
+    - lineinfile:
+        state: present
+        path: /etc/pam.d/common-password
+        regexp: '^password requisite pam_pwquality'
+        line: 'password requisite pam_pwquality.so retry=3'
+  when:
+    - debian9cis_rule_5_3_1
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.3.1
+
+- name: "SCORED | 5.3.2 | PATCH | Ensure lockout for failed password attempts is configured"
+  lineinfile:
+    path: /etc/pam.d/common-auth
+    state: present
+    regexp: '^auth required pam_tally2'
+    line: 'auth required pam_tally2.so onerr=fail audit silent deny=5 unlock_time=900'
+  when:
+    - debian9cis_rule_5_3_2
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.3.2
+
+- name: "SCORED | 5.3.3 | PATCH | Ensure password reuse is limited"
+  lineinfile:
+    path: /etc/pam.d/common-password
+    state: present
+    regexp: '^password required pam_pwhistory'
+    line: 'password required pam_pwhistory.so remember=5'
+  when:
+    - debian9cis_rule_5_3_3
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.3.3
+
+- name: "SCORED | 5.3.4 | PATCH | Ensure password hashing algorithm is SHA-512"
+  lineinfile:
+    path: /etc/pam.d/common-password
+    state: present
+    regexp: '^password\s+((\S+\s+)+)pam_unix\.so\s+(.*)(md5|sha512)(.*)$'
+    line: 'password \1pam_unix.so \2sha512\4'
+    #regexp: '^password\s+(\S+\s+)+pam_unix'
+    #line: 'password [success=1 default=ignore] pam_unix.so obscure sha512'
+  when:
+    - debian9cis_rule_5_3_4
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.3.4
+
 # ----------------------------------------------------------------------
 # Section 5.4
 # User Accounts and Environment
