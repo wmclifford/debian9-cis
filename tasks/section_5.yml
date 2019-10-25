@@ -10,30 +10,848 @@
 # Configure cron
 # ----------------------------------------------------------------------
 
+- name: "SCORED | 5.1.1 | PATCH | Ensure cron daemon is enabled"
+  service:
+    name: "{{ cron_service[ansible_os_family] }}"
+    enabled: yes
+  when:
+    - debian9cis_rule_5_1_1
+  tags:
+    - level1
+    - scored
+    - patch
+    - services
+    - cron
+    - rule_5.1.1
+
+- name: "SCORED | 5.1.2 | PATCH | Ensure permissions on /etc/crontab are configured"
+  file:
+    path: /etc/crontab
+    owner: root
+    group: root
+    mode: "0600"
+  when:
+    - debian9cis_rule_5_1_2
+  tags:
+    - level1
+    - scored
+    - patch
+    - cron
+    - rule_5.1.2
+
+- name: "SCORED | 5.1.3 | PATCH | Ensure permissions on /etc/cron.hourly are configured"
+  file:
+    path: /etc/cron.hourly
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  when:
+    - debian9cis_rule_5_1_3
+  tags:
+    - level1
+    - scored
+    - patch
+    - cron
+    - rule_5.1.3
+
+- name: "SCORED | 5.1.4 | PATCH | Ensure permissions on /etc/cron.daily are configured"
+  file:
+    path: /etc/cron.daily
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  when:
+    - debian9cis_rule_5_1_4
+  tags:
+    - level1
+    - scored
+    - patch
+    - cron
+    - rule_5.1.4
+
+- name: "SCORED | 5.1.5 | PATCH | Ensure permissions on /etc/cron.weekly are configured"
+  file:
+    path: /etc/cron.weekly
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  when:
+    - debian9cis_rule_5_1_5
+  tags:
+    - level1
+    - scored
+    - patch
+    - cron
+    - rule_5.1.5
+
+- name: "SCORED | 5.1.6 | PATCH | Ensure permissions on /etc/cron.monthly are configured"
+  file:
+    path: /etc/cron.monthly
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  when:
+    - debian9cis_rule_5_1_6
+  tags:
+    - level1
+    - scored
+    - patch
+    - cron
+    - rule_5.1.6
+
+- name: "SCORED | 5.1.7 | PATCH | Ensure permissions on /etc/cron.d are configured"
+  file:
+    path: /etc/cron.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  when:
+    - debian9cis_rule_5_1_7
+  tags:
+    - level1
+    - scored
+    - patch
+    - cron
+    - rule_5.1.7
+
+- name: "SCORED | 5.1.8 | PATCH | Ensure at/cron is restricted to authorized users"
+  block:
+    - file:
+        path: /etc/at.deny
+        state: absent
+    - file:
+        path: /etc/at.allow
+        state: touch
+        owner: root
+        group: root
+        mode: "0600"
+    - file:
+        path: /etc/cron.deny
+        state: absent
+    - file:
+        path: /etc/cron.allow
+        state: touch
+        owner: root
+        group: root
+        mode: "0600"
+  when:
+    - debian9cis_rule_5_1_8
+  tags:
+    - level1
+    - scored
+    - patch
+    - cron
+    - rule_5.1.8
+
 # ----------------------------------------------------------------------
 # Section 5.2
 # SSH Server Configuration
 # ----------------------------------------------------------------------
+
+- name: "SCORED | 5.2.1 | PATCH | Ensure permissions on /etc/ssh/sshd_config are configured"
+  file:
+    path: /etc/ssh/sshd_config
+    state: file
+    owner: root
+    group: root
+    mode: "0600"
+  when:
+    - debian9cis_rule_5_2_1
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.1
+
+- name: "SCORED | 5.2.2 | PATCH | Ensure permissions on SSH private host key files are configured"
+  block:
+    - find:
+        paths: /etc/ssh
+        patterns: "ssh_host_*_key"
+        file_type: file
+      register: ssh_priv_host_keys
+    - file:
+        path: "{{ item.path }}"
+        state: file
+        owner: root
+        group: root
+        mode: "0600"
+      with_items: "{{ ssh_priv_host_keys.files }}"
+      when:
+        - ssh_priv_host_keys is defined
+        - ssh_priv_host_keys.matched > 0
+  when:
+    - debian9cis_rule_5_2_2
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.2
+
+- name: "SCORED | 5.2.3 | PATCH | Ensure permissions on SSH public host key files are configured"
+  block:
+    - find:
+        paths: /etc/ssh
+        patterns: "ssh_host_*_key.pub"
+        file_type: file
+      register: ssh_pub_host_keys
+    - file:
+        path: "{{ item.path }}"
+        state: file
+        owner: root
+        group: root
+        mode: "0644"
+      with_items: "{{ ssh_pub_host_keys.files }}"
+      when:
+        - ssh_pub_host_keys is defined
+        - ssh_pub_host_keys.matched > 0
+  when:
+    - debian9cis_rule_5_2_3
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.3
+
+- name: "SCORED | 5.2.4 | PATCH | Ensure SSH Protocol is set to 2"
+  lineinfile:
+    state: present
+    path: /etc/ssh/sshd_config
+    regexp: '^(#)?Protocol '
+    line: 'Protocol 2'
+  notify: restart sshd
+  when:
+    - debian9cis_rule_5_2_4
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.4
+
+- name: "SCORED | 5.2.5 | PATCH | Ensure SSH LogLevel is appropriate"
+  lineinfile:
+    state: present
+    path: /etc/ssh/sshd_config
+    regexp: '^(#)?LogLevel '
+    line: 'LogLevel INFO'
+  notify: restart sshd
+  when:
+    - debian9cis_rule_5_2_5
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.5
+
+- name: "SCORED | 5.2.6 | PATCH | Ensure SSH X11 forwarding is disabled"
+  lineinfile:
+    state: present
+    path: /etc/ssh/sshd_config
+    regexp: '^(#)?X11Forwarding '
+    line: 'X11Forwarding no'
+  notify: restart sshd
+  when:
+    - debian9cis_rule_5_2_6
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.6
+
+- name: "SCORED | 5.2.7 | PATCH | Ensure SSH MaxAuthTries is set to 4 or less"
+  lineinfile:
+    state: present
+    path: /etc/ssh/sshd_config
+    regexp: '^(#)?MaxAuthTries '
+    line: 'MaxAuthTries 4'
+  notify: restart sshd
+  when:
+    - debian9cis_rule_5_2_7
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.7
+
+- name: "SCORED | 5.2.8 | PATCH | Ensure SSH IgnoreRhosts is enabled"
+  lineinfile:
+    state: present
+    path: /etc/ssh/sshd_config
+    regexp: '^(#)?IgnoreRhosts '
+    line: 'IgnoreRhosts yes'
+  notify: restart sshd
+  when:
+    - debian9cis_rule_5_2_8
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.8
+
+- name: "SCORED | 5.2.9 | PATCH | Ensure SSH HostbasedAuthentication is disabled"
+  lineinfile:
+    state: present
+    path: /etc/ssh/sshd_config
+    regexp: '^(#)?HostbasedAuthentication '
+    line: 'HostbasedAuthentication no'
+  notify: restart sshd
+  when:
+    - debian9cis_rule_5_2_9
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.9
+
+- name: "SCORED | 5.2.10 | PATCH | Ensure SSH root login is disabled"
+  lineinfile:
+    state: present
+    path: /etc/ssh/sshd_config
+    regexp: '^(#)?PermitRootLogin '
+    line: 'PermitRootLogin no'
+  notify: restart sshd
+  when:
+    - debian9cis_rule_5_2_10
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.10
+
+- name: "SCORED | 5.2.11 | PATCH | Ensure SSH PermitEmptyPasswords is disabled"
+  lineinfile:
+    state: present
+    path: /etc/ssh/sshd_config
+    regexp: '^(#)?PermitEmptyPasswords '
+    line: 'PermitEmptyPasswords no'
+  notify: restart sshd
+  when:
+    - debian9cis_rule_5_2_11
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.11
+
+- name: "SCORED | 5.2.12 | PATCH | Ensure SSH PermitUserEnvironment is disabled"
+  lineinfile:
+    state: present
+    path: /etc/ssh/sshd_config
+    regexp: '^(#)?PermitUserEnvironment '
+    line: 'PermitUserEnvironment no'
+  notify: restart sshd
+  when:
+    - debian9cis_rule_5_2_12
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.12
+
+- name: "SCORED | 5.2.13 | PATCH | Ensure only strong ciphers are used"
+  lineinfile:
+    state: present
+    path: /etc/ssh/sshd_config
+    regexp: '^(#)?Ciphers '
+    line: "Ciphers {{ debian9cis_sshd['ciphers'] }}"
+  notify: restart sshd
+  when:
+    - debian9cis_rule_5_2_13
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.13
+
+- name: "SCORED | 5.2.14 | PATCH | Ensure only strong MAC algorithms are used"
+  lineinfile:
+    state: present
+    path: /etc/ssh/sshd_config
+    regexp: '^(#)?MACs '
+    line: "MACs {{ debian9cis_sshd['macs'] }}"
+  notify: restart sshd
+  when:
+    - debian9cis_rule_5_2_14
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.14
+
+- name: "SCORED | 5.2.15 | PATCH | Ensure only strong Key Exchange algorithms are used"
+  lineinfile:
+    state: present
+    path: /etc/ssh/sshd_config
+    regexp: '^(#)?KexAlgorithms '
+    line: "KexAlgorithms {{ debian9cis_sshd['kexs'] }}"
+  notify: restart sshd
+  when:
+    - debian9cis_rule_5_2_15
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.15
+
+- name: "SCORED | 5.2.16 | PATCH | Ensure SSH Idle Timeout Interval is configured"
+  block:
+    lineinfile:
+      state: present
+      path: /etc/ssh/sshd_config
+      regexp: '^(#)?ClientAliveInterval '
+      line: "ClientAliveInterval {{ debian9cis_sshd['client_alive_interval'] }}"
+    lineinfile:
+      state: present
+      path: /etc/ssh/sshd_config
+      regexp: '^(#)?ClientAliveCountMax '
+      line: "ClientAliveCountMax {{ debian9cis_sshd['client_alive_count_max'] }}"
+  notify: restart sshd
+  when:
+    - debian9cis_rule_5_2_16
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.16
+
+- name: "SCORED | 5.2.17 | PATCH | Ensure SSH LoginGraceTime is set to one minute or less"
+  lineinfile:
+    state: present
+    path: /etc/ssh/sshd_config
+    regexp: '^(#)?LoginGraceTime '
+    line: "LoginGraceTime {{ debian9cis_sshd['login_grace_time'] }}"
+  notify: restart sshd
+  when:
+    - debian9cis_rule_5_2_17
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.17
+
+- name: "SCORED | 5.2.18 | PATCH | Ensure SSH access is limited"
+  block:
+    - lineinfile:
+        state: present
+        path: /etc/ssh/sshd_config
+        regexp: '^(#)?AllowUsers '
+        line: "AllowUsers {{ debian9cis_sshd['allow_users'] }}"
+      notify: restart sshd
+      when:
+        - "{{ debian9cis_sshd['allow_users'] | default('') }}"
+    - lineinfile:
+        state: present
+        path: /etc/ssh/sshd_config
+        regexp: '^(#)?AllowGroups '
+        line: "AllowGroups {{ debian9cis_sshd['allow_groups'] }}"
+      notify: restart sshd
+      when:
+        - "{{ debian9cis_sshd['allow_groups'] | default('') }}"
+    - lineinfile:
+        state: present
+        path: /etc/ssh/sshd_config
+        regexp: '^(#)?DenyUsers '
+        line: "DenyUsers {{ debian9cis_sshd['deny_users'] }}"
+      notify: restart sshd
+      when:
+        - "{{ debian9cis_sshd['deny_users'] | default('') }}"
+    - lineinfile:
+        state: present
+        path: /etc/ssh/sshd_config
+        regexp: '^(#)?DenyGroups '
+        line: "DenyGroups {{ debian9cis_sshd['deny_groups'] }}"
+      notify: restart sshd
+      when:
+        - "{{ debian9cis_sshd['deny_groups'] | default('') }}"
+  when:
+    - debian9cis_rule_5_2_18
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.18
+    - notimplemented
+
+- name: "SCORED | 5.2.19 | PATCH | Ensure SSH warning banner is configured"
+  lineinfile:
+    state: present
+    path: /etc/ssh/sshd_config
+    regexp: '^(#)?Banner '
+    line: "Banner /etc/issue.net"
+  notify: restart sshd
+  when:
+    - debian9cis_rule_5_2_19
+  tags:
+    - level1
+    - scored
+    - patch
+    - sshd
+    - rule_5.2.19
 
 # ----------------------------------------------------------------------
 # Section 5.3
 # Configure PAM
 # ----------------------------------------------------------------------
 
+- name: "SCORED | 5.3.1 | PATCH | Ensure password creation requirements are configured"
+  block:
+    - apt:
+        name: libpam-pwquality
+        state: present
+        install_recommends: no
+    - lineinfile:
+        state: present
+        path: /etc/security/pwquality.conf
+        regexp: '^{{ item.key }} = '
+        line: '{{ item.key }} = {{ item.value }}'
+      with_items:
+        - "{{ debian9cis_pwquality }}"
+    - lineinfile:
+        state: present
+        path: /etc/pam.d/common-password
+        regexp: '^password requisite pam_pwquality'
+        line: 'password requisite pam_pwquality.so retry=3'
+  when:
+    - debian9cis_rule_5_3_1
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.3.1
+
+- name: "SCORED | 5.3.2 | PATCH | Ensure lockout for failed password attempts is configured"
+  lineinfile:
+    path: /etc/pam.d/common-auth
+    state: present
+    regexp: '^auth required pam_tally2'
+    line: 'auth required pam_tally2.so onerr=fail audit silent deny=5 unlock_time=900'
+  when:
+    - debian9cis_rule_5_3_2
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.3.2
+
+- name: "SCORED | 5.3.3 | PATCH | Ensure password reuse is limited"
+  lineinfile:
+    path: /etc/pam.d/common-password
+    state: present
+    regexp: '^password required pam_pwhistory'
+    line: 'password required pam_pwhistory.so remember=5'
+  when:
+    - debian9cis_rule_5_3_3
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.3.3
+
+- name: "SCORED | 5.3.4 | PATCH | Ensure password hashing algorithm is SHA-512"
+  block:
+    # Assumes that the control is [success=1 default=ignore], which appears to be
+    # the default setting. Control value may need to be adjusted to match user
+    # environment.
+    pamd:
+      name: common-password
+      type: password
+      control: '[success=1 default=ignore]'
+      module_arguments: md5
+      module_path: pam_unix.so
+      state: args_absent
+    pamd:
+      name: common-password
+      type: password
+      control: '[success=1 default=ignore]'
+      module_arguments: sha512
+      module_path: pam_unix.so
+      stats: args_present
+  # lineinfile:
+  #   path: /etc/pam.d/common-password
+  #   state: present
+  #   regexp: '^password\s+((\S+\s+)+)pam_unix\.so\s+(.*)(md5|sha512)(.*)$'
+  #   line: 'password \1pam_unix.so \2sha512\4'
+  #   backrefs: yes
+  #   #regexp: '^password\s+(\S+\s+)+pam_unix'
+  #   #line: 'password [success=1 default=ignore] pam_unix.so obscure sha512'
+  when:
+    - debian9cis_rule_5_3_4
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.3.4
+
 # ----------------------------------------------------------------------
 # Section 5.4
 # User Accounts and Environment
 # ----------------------------------------------------------------------
+
+- name: "SCORED | 5.4.1.1 | PATCH | Ensure password expiration is 365 days or less"
+  block:
+    - name: "update login.defs for max days before password expires"
+      lineinfile:
+        state: present
+        path: /etc/login.defs
+        regexp: '^PASS_MAX_DAYS '
+        line: "PASS_MAX_DAYS {{ debian9cis_pass['max_days'] | default('365') }}"
+    - name: "modify user parameters for all users with a password set to match"
+      command: >-
+        set -o pipefail ;
+        getent shadow |awk -F: '($2!~/^[\*\!]/){ print $1 }' |xargs -I '{}' chage --maxdays {{ debian9cis_pass['max_days'] | default('365') }} '{}'
+  when:
+    - debian9cis_rule_5_4_1_1
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.4.1.1
+
+- name: "SCORED | 5.4.1.2 | PATCH | Ensure minimum days between password changes is 7 or more"
+  block:
+    - name: "update login.defs for min days between password changes"
+      lineinfile:
+        state: present
+        path: /etc/login.defs
+        regexp: '^PASS_MIN_DAYS '
+        line: "PASS_MIN_DAYS {{ debian9cis_pass['min_days'] | default('7') }}"
+    - name: "modify user parameters for all users with a password set to match"
+      command: >-
+        set -o pipefail ;
+        getent shadow |awk -F: '($2!~/^[\*\!]/){ print $1 }' |xargs -I '{}' chage --mindays {{ debian9cis_pass['min_days'] | default('7') }} '{}'
+  when:
+    - debian9cis_rule_5_4_1_2
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.4.1.2
+
+- name: "SCORED | 5.4.1.3 | PATCH | Ensure password expiration warning days is 7 or more"
+  block:
+    - name: "update login.defs for password expiration warning days"
+      lineinfile:
+        state: present
+        path: /etc/login.defs
+        regexp: '^PASS_WARN_AGE '
+        line: "PASS_WARN_AGE {{ debian9cis_pass['warn_age'] | default('7') }}"
+    - name: "modify user parameters for all users with a password set to match"
+      command: >-
+        set -o pipefail ;
+        getent shadow |awk -F: '($2!~/^[\*\!]/){ print $1 }' |xargs -I '{}' chage --warndays {{ debian9cis_pass['warn_age'] | default('7') }} '{}'
+  when:
+    - debian9cis_rule_5_4_1_3
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.4.1.3
+
+- name: "SCORED | 5.4.1.4 | PATCH | Ensure inactive password lock is 30 days or less"
+  block:
+    - name: "update useradd default for inactive password lock"
+      command: "useradd -D -f {{ debian9cis_pass['inactive'] | default('30') }}"
+    - name: "modify user parameters for all users with a password set to match"
+      command: >-
+        set -o pipefail ;
+        getent shadow |awk -F: '($2!~/^[\*\!]/){ print $1 }' |xargs -I '{}' chage --inactive {{ debian9cis_pass['inactive'] | default('30') }} '{}'
+  when:
+    - debian9cis_rule_5_4_1_4
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.4.1.4
+
+- name: "SCORED | 5.4.1.5 | PATCH | Ensure all users last password change date is in the past"
+  command: /bin/true
+  changed_when: false
+  when:
+    - debian9cis_rule_5_4_1_5
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.4.1.5
+    - notimplemented
+
+- name: "SCORED | 5.4.2 | PATCH | Ensure system accounts are non-login"
+  shell: |
+    for user in `awk -F: '($3 < 1000){ print $1 }' /etc/passwd` ; do
+        if [ "${user}" != "root" ] ; then
+            usermod -L ${user}
+            if [ "${user}" != "sync" ] && [ "${user}" != "shutdown" ] && [ "${user} != "halt" ] ; then
+                usermod -s /usr/sbin/nologin ${user}
+            fi
+        fi
+    done
+  changed_when: false
+  when:
+    - debian9cis_rule_5_4_2
+    - system_accounts_non_login_1.stdout
+    - system_accounts_non_login_2.stdout
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.4.2
+
+- name: "SCORED | 5.4.3 | PATCH | Ensure default group for the root account is GID 0"
+  command: usermod -g 0 root
+  changed_when: false
+  failed_when: false
+  when:
+    - debian9cis_rule_5_4_3
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.4.3
+
+- name: "SCORED | 5.4.4 | PATCH | Ensure default user umask is 027 or more restrictive"
+  block:
+    - lineinfile:
+        path: /etc/bash.bashrc
+        state: present
+        create: yes
+        regexp: '^umask '
+        line: 'umask 027'
+    - lineinfile:
+        path: /etc/profile
+        state: present
+        create: yes
+        regexp: '^umask '
+        line: 'umask 027'
+    - lineinfile:
+        path: /etc/profile.d/99-umask.sh
+        state: present
+        create: yes
+        regexp: '^umask '
+        line: 'umask 027'
+  when:
+    - debian9cis_rule_5_4_4
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.4.4
+
+- name: "SCORED | 5.4.5 | PATCH | Ensure default user shell timeout is 900 seconds or less"
+  block:
+    - lineinfile:
+        path: /etc/bash.bashrc
+        state: present
+        create: yes
+        regexp: '^TMOUT='
+        line: "TMOUT={{ debian9cis_shell_timeout | default('900') }}"
+    - lineinfile:
+        path: /etc/profile
+        state: present
+        create: yes
+        regexp: '^TMOUT='
+        line: "TMOUT={{ debian9cis_shell_timeout | default('900') }}"
+    - lineinfile:
+        path: /etc/profile.d/99-tmout.sh
+        state: present
+        create: yes
+        regexp: '^TMOUT='
+        line: "TMOUT={{ debian9cis_shell_timeout | default('900') }}"
+  when:
+    - debian9cis_rule_5_4_5
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.4.5
 
 # ----------------------------------------------------------------------
 # Section 5.5
 # root login
 # ----------------------------------------------------------------------
 
+# There are a _ton_ of entries in /etc/securetty, most of which will
+# probably not apply to your environment. Using a template file would
+# most likely be the best way to configure this. Here, we use the
+# lineinfile module to strip away entries which are known to be
+# unneeded.
+
+- name: "NOTSCORED | 5.5 | PATCH | Ensure root login is restricted to system console"
+  block:
+    # single-character
+    - lineinfile:
+        path: /etc/securetty
+        state: absent
+        regexp: '^tty[B-FHLMOPRT-Y][0-9]+'
+    # multi-character
+    - lineinfile:
+        path: /etc/securetty
+        state: absent
+        regexp: '^tty(SR|CH|MX|SI|USB|LU|SA|SC|AM|AMA|DB|SG|SMX|MM|CPM|VR|IOC|SIOC|PSC|AT|NX|UL|PZ|TX|MAX|EQ|mxc|sclp|SAC)[0-9]+'
+    # non "tty"
+    - lineinfile:
+        path: /etc/securetty
+        state: absent
+        regexp: '^duart[0-9]+'
+  when:
+    - debian9cis_rule_5_5
+  tags:
+    - level1
+    - notscored
+    - patch
+    - rule_5.5
+
 # ----------------------------------------------------------------------
 # Section 5.6
 # su access
 # ----------------------------------------------------------------------
+
+- name: "SCORED | 5.6 | PATCH | Ensure access to the su command is restricted"
+  block:
+    - lineinfile:
+        path: /etc/pam.d/su
+        state: present
+        regexp: '^(#)?auth.*pam_wheel'
+        line: 'auth required pam_wheel.so use_uid'
+    # Note: this is semi-dangerous -- stripping all users from the sudo group.
+    - lineinfile:
+        path: /etc/group
+        regexp: '^(sudo:x:\d+:).*$'
+        line: '\1'
+        backrefs: yes
+    - lineinfile:
+        path: /etc/gshadow
+        regexp: '^(sudo:\*::).*$'
+        line: 'sudo:*::'
+  when:
+    - debian9cis_rule_5_6
+  tags:
+    - level1
+    - scored
+    - patch
+    - rule_5.6
 
 # End -- Section 5
 # ======================================================================
