@@ -571,13 +571,31 @@
     - rule_5.3.3
 
 - name: "SCORED | 5.3.4 | PATCH | Ensure password hashing algorithm is SHA-512"
-  lineinfile:
-    path: /etc/pam.d/common-password
-    state: present
-    regexp: '^password\s+((\S+\s+)+)pam_unix\.so\s+(.*)(md5|sha512)(.*)$'
-    line: 'password \1pam_unix.so \2sha512\4'
-    #regexp: '^password\s+(\S+\s+)+pam_unix'
-    #line: 'password [success=1 default=ignore] pam_unix.so obscure sha512'
+  block:
+    # Assumes that the control is [success=1 default=ignore], which appears to be
+    # the default setting. Control value may need to be adjusted to match user
+    # environment.
+    pamd:
+      name: common-password
+      type: password
+      control: '[success=1 default=ignore]'
+      module_arguments: md5
+      module_path: pam_unix.so
+      state: args_absent
+    pamd:
+      name: common-password
+      type: password
+      control: '[success=1 default=ignore]'
+      module_arguments: sha512
+      module_path: pam_unix.so
+      stats: args_present
+  # lineinfile:
+  #   path: /etc/pam.d/common-password
+  #   state: present
+  #   regexp: '^password\s+((\S+\s+)+)pam_unix\.so\s+(.*)(md5|sha512)(.*)$'
+  #   line: 'password \1pam_unix.so \2sha512\4'
+  #   #regexp: '^password\s+(\S+\s+)+pam_unix'
+  #   #line: 'password [success=1 default=ignore] pam_unix.so obscure sha512'
   when:
     - debian9cis_rule_5_3_4
   tags:
