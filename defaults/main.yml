@@ -401,8 +401,11 @@ debian9cis_warning_banner: |
 
 ## Section 4 vars
 debian9cis_auditd:
+  action_mail_account: root
   admin_space_left_action: halt
   max_log_file_action: keep_logs
+  max_log_file_size_mb: 10
+  space_left_action: email
 debian9cis_logrotate: "daily"
 
 ## Section 5 vars
